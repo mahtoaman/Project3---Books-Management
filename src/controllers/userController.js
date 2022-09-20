@@ -56,9 +56,9 @@ const createUser = async function (req, res) {
       });
 
     let savedData = await userModel.create(data);
-    res.status(201).send({ status: true, msg: savedData });
+    return res.status(201).send({ status: true, msg: savedData });
   } catch (err) {
-    res.status(500).send({ status: false, msg: err.message });
+    return res.status(500).send({ status: false, msg: err.message });
   }
 };
 
@@ -68,14 +68,16 @@ const jwt = require("jsonwebtoken");
 
 const login = async function (req, res) {
   try {
-    let emailId = req.email;
-    let password = req.password;
+    let emailId = req.body.email;
+    let password = req.body.password;
+
+   
 
     if (!emailId) {
-      res.status(401).send({ status: false, msg: "email is required" });
+      return res.status(401).send({ status: false, msg: "email is required" });
     }
     if (!password) {
-      res.status(401).send({ status: false, msg: "password is required" });
+      return res.status(401).send({ status: false, msg: "password is required" });
     }
 
     let loginUser = await userModel.findOne({
@@ -83,7 +85,7 @@ const login = async function (req, res) {
       password: password,
     });
     if (!loginUser) {
-      res.status(404).send({ status: false, msg: "user not found" });
+       return res.status(404).send({ status: false, msg: "user not found" });
     }
 
     let token = jwt.sign(
@@ -94,7 +96,7 @@ const login = async function (req, res) {
       },
       "bhai tera token generate hogya!!!!"
     );
-    res.status(200).send({ status: true, data: token });
+    return res.status(200).send({ status: true, data: token });
   } catch (err) {
     return res.status(500).send({ status: false, msg: err.message });
   }
