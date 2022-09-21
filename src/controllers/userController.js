@@ -1,4 +1,5 @@
 const userModel = require("../models/userModel");
+const jwt = require("jsonwebtoken");
 const { isValidBody,isValidName,isValidNumber,isValidEmail,isValidPassword } = require("../validators/validator");
 
 const createUser = async function (req, res) {
@@ -64,28 +65,35 @@ const createUser = async function (req, res) {
 
 
 //===============================LOGIN USER===============================================
-const jwt = require("jsonwebtoken");
 
 const login = async function (req, res) {
   try {
     let emailId = req.body.email;
     let password = req.body.password;
 
-   
+    let emptyBody = Object.assign({}, emailId, password);
+    if (Object.keys(emptyBody).length == 0) {
+      return res
+        .status(400)
+        .send({ status: false, msg: "all fields are required" });
+    }
 
-    if (!emailId) {
-      return res.status(401).send({ status: false, msg: "email is required" });
+    if (!emailId || !isValidEmail(emailId.trim())) {
+      return res.status(400).send({ status: false, msg: "email is required" });
     }
-    if (!password) {
-      return res.status(401).send({ status: false, msg: "password is required" });
-    }
+
+    if (!password || !isValidPassword(password.trim()))
+      return res.status(400).send({
+        status: false,
+        msg: "Password is required with these conditions: at least one upperCase, lowerCase letter, one number and one special character, min 8 char, max 15 char",
+      });
 
     let loginUser = await userModel.findOne({
       email: emailId,
       password: password,
     });
     if (!loginUser) {
-       return res.status(404).send({ status: false, msg: "user not found" });
+      return res.status(404).send({ status: false, msg: "invalid login user" });
     }
 
     let token = jwt.sign(
@@ -94,6 +102,7 @@ const login = async function (req, res) {
         userStatus: "active",
         app: "user of this book management system",
       },
+
       "bhai tera token generate hogya!!!!"
     );
     return res.status(200).send({ status: true, data: token });
