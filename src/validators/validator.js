@@ -32,7 +32,7 @@ const isValidId = function (id) {
 };
 
 const isValidISBN = function (isbn) {
- if (/^(97(8|9))?\d{9}(\d|X)$/.test(isbn)) return true;
+ if (/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/.test(isbn)) return true;
  return false;
 };
 

@@ -1,6 +1,12 @@
 const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
-const { isValidBody,isValidName,isValidNumber,isValidEmail,isValidPassword } = require("../validators/validator");
+const {
+  isValidBody,
+  isValidName,
+  isValidNumber,
+  isValidEmail,
+  isValidPassword,
+} = require("../validators/validator");
 
 const createUser = async function (req, res) {
   try {
@@ -63,13 +69,12 @@ const createUser = async function (req, res) {
   }
 };
 
-
 //===============================LOGIN USER===============================================
 
 const login = async function (req, res) {
   try {
-    let data = req.body
-    let {email,password} = data
+    let data = req.body;
+    let { email, password } = data;
 
     if (!email || !password) {
       return res
@@ -78,13 +83,23 @@ const login = async function (req, res) {
     }
 
     if (!email || !isValidEmail(email.trim())) {
-      return res.status(400).send({ status: false, msg: "Email is required in a valid format" });
+      return res
+        .status(400)
+        .send({ status: false, msg: "Email is required in a valid format" });
     }
 
-    let loginUser = await userModel.findOne({email:email});
+    let loginUser = await userModel.findOne({ email: email });
     if (!loginUser) {
-      return res.status(404).send({ status: false, msg: "invalid login user" });
+      return res
+        .status(400)
+        .send({ status: false, msg: "You are not registered" });
     }
+
+    if (password != loginUser.password)
+      return res.status(400).send({
+        status: false,
+        msg: "Incorrect password",
+      });
 
     let token = jwt.sign(
       {
