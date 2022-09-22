@@ -68,30 +68,20 @@ const createUser = async function (req, res) {
 
 const login = async function (req, res) {
   try {
-    let emailId = req.body.email;
-    let password = req.body.password;
+    let data = req.body
+    let {email,password} = data
 
-    let emptyBody = Object.assign({}, emailId, password);
-    if (Object.keys(emptyBody).length == 0) {
+    if (!email || !password) {
       return res
         .status(400)
-        .send({ status: false, msg: "all fields are required" });
+        .send({ status: false, msg: "email and passwrod are required" });
     }
 
-    if (!emailId || !isValidEmail(emailId.trim())) {
-      return res.status(400).send({ status: false, msg: "email is required" });
+    if (!email || !isValidEmail(email.trim())) {
+      return res.status(400).send({ status: false, msg: "Email is required in a valid format" });
     }
 
-    if (!password || !isValidPassword(password.trim()))
-      return res.status(400).send({
-        status: false,
-        msg: "Password is required with these conditions: at least one upperCase, lowerCase letter, one number and one special character, min 8 char, max 15 char",
-      });
-
-    let loginUser = await userModel.findOne({
-      email: emailId,
-      password: password,
-    });
+    let loginUser = await userModel.findOne({email:email});
     if (!loginUser) {
       return res.status(404).send({ status: false, msg: "invalid login user" });
     }
