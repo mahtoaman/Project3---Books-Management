@@ -92,7 +92,7 @@ const getBooks = async (req, res) => {
     const input = req.query;
 
     const book = await bookModel.find(input, { isDeleted: false }).select({
-      _id: 1,
+
       title: 1,
       excerpt: 1,
       userId: 1,
@@ -110,6 +110,7 @@ const getBooks = async (req, res) => {
       return res
         .status(404)
         .send({ status: false, msg: "no such  data found" });
+        
     const sortedBooks = book.sort((a, b) => a.title.localeCompare(b.title));
     return res
       .status(200)
