@@ -26,13 +26,13 @@ const createUser = async function (req, res) {
         msg: `Title is required in given format, format: "Mr","Mrs" or "Miss`,
       });
 
-    if (!name || !isValidName(name.trim()))
+    if (!name || !isValidName(name))
       return res.status(400).send({
         status: false,
         msg: "Name is required in a valid format",
       });
 
-    if (!phone || !isValidNumber(phone.trim()))
+    if (!phone || !isValidNumber(phone))
       return res.status(400).send({
         status: false,
         message:

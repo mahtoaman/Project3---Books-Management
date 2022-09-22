@@ -12,15 +12,14 @@ const {
 const createBooks = async function (req, res) {
   try {
     data = req.body;
-    const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } =
-      data;
+    const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = data;
 
     if (!isValidBody(data))
       return res
         .status(400)
         .send({ status: false, message: "PLz provide data to create book" });
 
-    if (!title || !isValidName(title.trim()))
+    if (!title || !isValidName(title))
       return res.status(400).send({ status: false, msg: "Title is required" });
 
     let isUniqueTitle = await bookModel.findOne({ title: title });
