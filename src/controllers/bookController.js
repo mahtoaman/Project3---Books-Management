@@ -30,12 +30,10 @@ const createBooks = async function (req, res) {
         .send({ status: false, msg: "This book already exist" });
 
     if (!excerpt || !isValidName(excerpt.trim()))
-      return res
-        .status(400)
-        .send({
-          status: false,
-          msg: "Please Provide Excerpt in a valid format",
-        });
+      return res.status(400).send({
+        status: false,
+        msg: "Please Provide Excerpt in a valid format",
+      });
 
     if (!userId || !isValidId(userId))
       return res
@@ -60,12 +58,10 @@ const createBooks = async function (req, res) {
         .send({ status: false, msg: "ISBN is already registered!" });
 
     if (!category || !isValidName(category.trim()))
-      return res
-        .status(400)
-        .send({
-          status: false,
-          msg: "Please Provide Category in a valid format",
-        });
+      return res.status(400).send({
+        status: false,
+        msg: "Please Provide Category in a valid format",
+      });
 
     if (!subcategory || !isValidName(subcategory.trim()))
       return res
@@ -170,55 +166,59 @@ const updateBookById = async function (req, res) {
         .send({ status: false, message: "No book found with given Id" });
     }
     if (!isValidBody(data))
+      return res.status(400).send({
+        status: false,
+        messaage: " Update request rejected no data is found to update",
+      });
+
+    const { title, excerpt, releasedAt, ISBN } = data;
+
+    if (title && !isValidName(title.trim()))
       return res
         .status(400)
-        .send({ status: false, messaage: " Update request rejected no data is found to update" });
-    
-    const { title, excerpt, releasedAt, ISBN } = requestBody;
-    if (title !== undefined) {
-      if (typeof title !== "string" || title.trim().length == 0) {
-        return res
-          .status(400)
-          .send({ status: false, messaage: "title type must be in string" });
-      }
-    }
+        .send({ status: false, messaage: "title type must be in string" });
+
     const titleExist = await bookModel.findOne({ title });
-    if (titleExist) {
+    if (titleExist)
       return res
         .status(400)
         .send({ status: false, messaage: "Use different title" });
-    }
-    if (ISBN !== undefined) {
-      if (typeof ISBN !== "string" || ISBN.trim().length == 0) {
-        return res
-          .status(400)
-          .send({ status: false, messaage: "ISBN type must be in string" });
-      }
-    }
-    const existISBN = await bookModel.findOne({ ISBN });
-    if (existISBN) {
+
+    if (ISBN && !isValidISBN(ISBN.trim()))
       return res
         .status(400)
         .send({ status: false, messaage: "Use different ISBN" });
-    }
-    if (excerpt !== undefined) {
-      if (typeof excerpt !== "string" || excerpt.trim().length == 0) {
-        return res.status(400).send({
-          status: false,
-          messaage: "expcerpt type must  be in string",
-        });
-      }
-    }
-    if (releasedAt !== undefined) {
-      if (typeof releasedAt !== "string" || releasedAt.trim().length == 0) {
-        return res.status(400).send({
-          status: false,
-          messaage: "releasedAt type must be in string",
-        });
-      }
-    }
+
+    const existISBN = await bookModel.findOne({ ISBN });
+    if (existISBN)
+      return res
+        .status(400)
+        .send({ status: false, messaage: "Use different ISBN" });
+
+    if (excerpt && !isValidName(excerpt.trim()))
+      return res.status(400).send({
+        status: false,
+        messaage: "Invalid excerpt",
+      });
+
+    if (releasedAt && !isValidDate(releasedAt))
+      return res.status(400).send({
+        status: false,
+        messaage: "releasedAt type must be in string in YYYY/MM/DD format",
+      });
+
     const updateBook = await bookModel.findByIdAndUpdate(
-      { _id: existBook._id },
+      { _id: bookId, isDeleted: false },
+      {
+        $set: {
+          title: title,
+          excerpt: excerpt,
+          releasedAt: releasedAt,
+          ISBN: ISBN,
+          isPublished: true,
+          publishedAt: new Date(),
+        },
+      },
       { new: true }
     );
     return res
