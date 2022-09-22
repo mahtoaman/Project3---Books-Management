@@ -6,13 +6,13 @@ const {
   isValidNumber,
   isValidEmail,
   isValidPassword,
-  isValidPin
+  isValidPin,
 } = require("../validators/validator");
 
 const createUser = async function (req, res) {
   try {
     let data = req.body;
-    let { title, name, phone, email, password } = data;
+    let { title, name, phone, email, password, address } = data;
 
     if (!isValidBody(data)) {
       return res
@@ -70,7 +70,7 @@ const createUser = async function (req, res) {
           .send({ status: false, message: "Please enter valid address" });
 
       let { street, city, pincode } = address;
-      if (street.trim == 0)
+      if (!street || street.trim() == 0)
         return res.status(400).send({
           status: false,
           message: "Please enter a valid street",
@@ -85,10 +85,10 @@ const createUser = async function (req, res) {
         return res
           .status(400)
           .send({ status: false, message: "Please enter a valid Pincode" });
-
-      let savedData = await userModel.create(data);
-      return res.status(201).send({ status: true, msg: savedData });
     }
+
+    let savedData = await userModel.create(data);
+    return res.status(201).send({ status: true, msg: savedData });
   } catch (err) {
     return res.status(500).send({ status: false, msg: err.message });
   }
