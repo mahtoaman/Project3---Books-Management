@@ -160,6 +160,7 @@ const updateBookById = async function (req, res) {
       _id: bookId,
       isDeleted: false,
     });
+
     if (!isBookPresent) {
       return res
         .status(400)
@@ -187,7 +188,7 @@ const updateBookById = async function (req, res) {
     if (ISBN && !isValidISBN(ISBN.trim()))
       return res
         .status(400)
-        .send({ status: false, messaage: "Use different ISBN" });
+        .send({ status: false, messaage: "Not a valid ISBN" });
 
     const existISBN = await bookModel.findOne({ ISBN });
     if (existISBN)

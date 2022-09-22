@@ -9,12 +9,11 @@ const isValidEmail = function (mail) {
 };
 
 const isValidPassword = function (pass) {
-  if (/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,32}$/.test(pass))
-    return true;
+return (/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,32}$/.test(pass))
 };
 
 const isValidName = function (name) {
-  if (/^[A-Za-z]{1,35}/.test(name)) return true;
+  if (/^[a-z ,.'-]+$/.test(name)) return true;
   return false;
 };
 
