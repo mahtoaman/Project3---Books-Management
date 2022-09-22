@@ -42,6 +42,10 @@ const isValidDate = function (date) {
  return false;
 };
 
+ const isValidPin = function(pincode){
+   return /^[1-9][0-9]{5}$/.test(pincode);
+ };
+
 module.exports = {
   isValidEmail,
   isValidBody,
@@ -50,5 +54,6 @@ module.exports = {
   isValidNumber,
   isValidId,
   isValidISBN,
-  isValidDate
+  isValidDate,
+  isValidPin
 };

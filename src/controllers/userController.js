@@ -6,6 +6,7 @@ const {
   isValidNumber,
   isValidEmail,
   isValidPassword,
+  isValidPin
 } = require("../validators/validator");
 
 const createUser = async function (req, res) {
@@ -62,8 +63,32 @@ const createUser = async function (req, res) {
         msg: "Password is required with these conditions: at least one upperCase, lowerCase letter, one number and one special character, min 8 char, max 15 char",
       });
 
-    let savedData = await userModel.create(data);
-    return res.status(201).send({ status: true, msg: savedData });
+    if (address) {
+      if (!isValidBody(address))
+        return res
+          .status(400)
+          .send({ status: false, message: "Please enter valid address" });
+
+      let { street, city, pincode } = address;
+      if (street.trim == 0)
+        return res.status(400).send({
+          status: false,
+          message: "Please enter a valid street",
+        });
+
+      if (!city || !isValidName(city))
+        return res
+          .status(400)
+          .send({ status: false, message: "Please enter a valid city name" });
+
+      if (!pincode || !isValidPin(pincode))
+        return res
+          .status(400)
+          .send({ status: false, message: "Please enter a valid Pincode" });
+
+      let savedData = await userModel.create(data);
+      return res.status(201).send({ status: true, msg: savedData });
+    }
   } catch (err) {
     return res.status(500).send({ status: false, msg: err.message });
   }
