@@ -3,7 +3,7 @@
 const mongoose = require("mongoose");
 
 const isValidEmail = function (mail) {
-  if (/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(mail)) {
+  if (/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})$/.test(mail)) {
     return true;
   }
 };
@@ -13,7 +13,7 @@ return (/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8
 };
 
 const isValidName = function (name) {
-  if (/^[a-z ,.'-]+$/.test(name)) return true;
+  if (/^[a-z ,.'-]+$/i.test(name)) return true;
   return false;
 };
 
