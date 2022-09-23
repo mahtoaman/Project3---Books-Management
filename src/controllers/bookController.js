@@ -12,7 +12,8 @@ const {
 const createBooks = async function (req, res) {
   try {
     data = req.body;
-    const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = data;
+    const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } =
+      data;
 
     if (!isValidBody(data))
       return res
@@ -89,33 +90,60 @@ const createBooks = async function (req, res) {
 const getBooks = async (req, res) => {
   try {
     const input = req.query;
+    const filter = { isDeleted: false }; // Object Manupulation
+    const { userId, category, subcategory } = input; // Destructuring
 
-    const book = await bookModel.find(input, { isDeleted: false }).select({
+    if (!isValidBody(input))
+      return res
+        .status(400)
+        .send({ status: false, msg: "Please provide atleast one param!" });
 
+    if (userId) {
+      // Nested If Else used here
+      if (!objectValue(userId)) {
+        return res
+          .status(400)
+          .send({ status: false, msg: "userId is invalid!" });
+      }
+      if (!isValidId(userId)) {
+        return res
+          .status(400)
+          .send({ status: false, msg: "userId is invalid!" });
+      } else {
+        filter.userId = userId;
+      }
+    }
+    if (objectValue(category)) {
+      filter.category = category.trim();
+    }
+    if (objectValue(subcategory)) {
+      const subcategoryArray = subcategory
+        .trim()
+        .split(",")
+        .map((s) => s.trim());
+      filter.subcategory = { $all: subcategoryArray }; // The $all operator selects the documents where the value of a field is an array that contains all the specified elements.
+    }
+
+    const bookList = await bookModel.find(filter).select({
       title: 1,
       excerpt: 1,
       userId: 1,
       category: 1,
+      review: 1,
       releasedAt: 1,
-      reviews: 1,
-      createdAt: 0,
-      updatedAt: 0,
-      subcategory: 1,
-      deletedAt: 0,
-      __v: 0,
     });
 
-    if (book.length == 0)
-      return res
-        .status(404)
-        .send({ status: false, msg: "no such  data found" });
-        
-    const sortedBooks = book.sort((a, b) => a.title.localeCompare(b.title));
-    return res
+    if (bookList.length === 0)
+      return res.status(400).send({ status: false, msg: "no book found!" }); // DB Validation
+
+    const sortedBooks = bookList.sort((a, b) => a.title.localeCompare(b.title)); // Sorting in Alphabetical Order
+    // The localeCompare() method returns a number indicating whether a reference string comes before, or after, or is the same as the given string in sort order.
+
+    res
       .status(200)
-      .send({ status: true, msg: "Book lists", data: sortedBooks });
-  } catch (err) {
-    return res.status(500).send({ status: false, msg: err.message });
+      .send({ status: true, message: "Books list", data: sortedBooks });
+  } catch (error) {
+    res.status(500).send({ status: false, msg: error.message });
   }
 };
 
