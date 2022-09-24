@@ -77,18 +77,21 @@ const createReview = async function (req, res) {
         message: "isDeleted type must be in boolean",
       });
 
+    const createReview = await reviewModel.create(data);
     const updateBookReview = await bookModel.findOneAndUpdate(
       { _id: bookId, isDeleted: false },
       { $inc: { reviews: 1 } },
       { new: true }
-    );
+    ).lean()
+    updateBookReview["reviewsData"] = createReview;
 
-    data["bookId"] = bookId; //we need bookId in response that is why we have added this
-    const createReviews = await reviewModel.create(data);
-
-    return res
-      .status(201)
-      .send({ status: true, message: "Success", data: createReviews });
+    //we need bookId in response that is why we have added this
+    data["bookId"] = bookId;
+    return res.status(201).send({
+      status: true,
+      message: "Success",
+      data: updateBookReview,
+    });
   } catch (err) {
     return res.status(500).send({ status: false, message: err.message });
   }

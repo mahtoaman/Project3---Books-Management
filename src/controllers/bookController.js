@@ -1,5 +1,6 @@
 const bookModel = require("../models/bookModel");
 const userModel = require("../models/userModel");
+const reviewModel = require("../models/reviewModel");
 
 const {
   isValidId,
@@ -7,7 +8,6 @@ const {
   isValidBody,
   isValidDate,
   isValidISBN,
-  objectValue,
   isValid,
   isValidRating,
 } = require("../validators/validator");
@@ -170,16 +170,21 @@ const getBookById = async function (req, res) {
         .status(400)
         .send({ status: false, message: "Invalid bookId!" });
 
-    let getBook = await bookModel.findOne({ _id: bookId, isDeleted: false });
+    let getBook = await bookModel
+      .findOne({ _id: bookId, isDeleted: false })
+      .lean();
     if (!getBook)
       return res
         .status(404)
         .send({ status: false, message: "No book found with given bookId" });
 
-    let getReviews = await reviewModel.find({
-      bookId: bookId,
-      isDeleted: false,
-    });
+    let getReviews = await reviewModel
+      .find({
+        bookId: bookId,
+        isDeleted: false,
+      })
+      .select({ isDeleted: 0, createdAt: 0, updatedAt: 0, _id: 0, __v:0 });
+
     getBook["reviewsData"] = getReviews;
     return res
       .status(200)
