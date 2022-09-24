@@ -9,7 +9,9 @@ const isValidEmail = function (mail) {
 };
 
 const isValidPassword = function (pass) {
-return (/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,32}$/.test(pass))
+  return /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,32}$/.test(
+    pass
+  );
 };
 
 const isValidName = function (name) {
@@ -31,32 +33,31 @@ const isValidId = function (id) {
 };
 
 const isValidISBN = function (isbn) {
- if (/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/.test(isbn)) return true;
- return false;
+  if (/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/.test(isbn)) return true;
+  return false;
 };
 
 const isValidDate = function (date) {
- if (/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/.test(date))
-   return true;
- return false;
+  if (/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/.test(date))
+    return true;
+  return false;
 };
 
- const isValidPin = function(pincode){
-   return /^[1-9][0-9]{5}$/.test(pincode);
- };
+const isValidPin = function (pincode) {
+  return /^[1-9][0-9]{5}$/.test(pincode);
+};
 
- const objectValue = (value) => {
-   if (
-     typeof value === "undefined" ||
-     value === null ||
-     typeof value === "boolean" ||
-     typeof value === "number"
-   )
-     return false;
-   if (typeof value === "string" && value.length === 0) return false;
-   return true;
- };
+const isValid = function (value) {
+  if (typeof value == undefined || value == null || value.length == 0)
+    return false;
+  if (typeof value === "string" && value.trim().length === 0) return false;
+  return true;
+};
 
+const isValidRating = function (rating) {
+  if (!/^\s*([1-5]){1}\s*$/.test(rating)) return false;
+  return true;
+};
 
 module.exports = {
   isValidEmail,
@@ -68,5 +69,6 @@ module.exports = {
   isValidISBN,
   isValidDate,
   isValidPin,
-  objectValue
+  isValid,
+  isValidRating
 };
