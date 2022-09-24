@@ -1,152 +1,116 @@
 const reviewModel = require("../models/reviewModel");
 const bookModel = require("../models/bookModel");
-const { isValidId, isValidBody, isValidRating } = require("../validators/validator");
-const mongoose = require("mongoose");
+const {
+  isValidId,
+  isValidBody,
+  isValidRating,
+  isValidName,
+  isValidDate,
+  isValid,
+} = require("../validators/validator");
 
-// =============================== CREATE REVIEW ==================================================
-const createReview = async function (req, res) {try {
-  const requestBody = req.body;
-  // const queryParams = req.query;
-  const bookId = req.params.bookId;
+// =============================== CREATE REVIEW ==========================================================
 
-  //query params must be empty
-  // if (!isValidBody(queryParams)) {
-  //   return res.status(400).send({ status: false, message: "invalid request" });
-  // }
+const createReview = async function (req, res) {
+  try {
+    const bookId = req.params.bookId;
+    const data = req.body;
+    const { reviewedBy, rating, review, isDeleted, reviewedAt } = data;
 
-  if (!isValidBody(requestBody)) {
-    return res
-      .status(400)
-      .send({
-        status: false,
-        message: "review data is required to create a new review",
-      });
-  }
-
-  if (!bookId) {
-    return res
-      .status(400)
-      .send({ status: false, message: "bookId is required in path params" });
-  }
-
-  if (!isValidId(bookId)) {
-    return res
-      .status(400)
-      .send({ status: false, message: `enter a valid bookId` });
-  }
-
-  const bookByBookId = await bookModel.findOne({
-    _id: bookId,
-    isDeleted: false,
-    deletedAt: null,
-  });
-
-  if (!bookByBookId) {
-    return res
-      .status(404)
-      .send({ status: false, message: ` No Book found by ${bookId}` });
-  }
-
-  // using destructuring then checking existence of property. If exist then validating that key
-  const { reviewedBy, rating, review } = requestBody;
-
-  // creating an object to add validated keys from requestBody
-  const reviewData = {};
-
-  if (requestBody.hasOwnProperty("reviewedBy")) {
-    if (isValid(reviewedBy)) {
-      reviewData["reviewedBy"] = reviewedBy.trim();
-    } else {
+    if (!isValidId(bookId))
       return res
         .status(400)
-        .send({
-          status: false,
-          message: "enter name in valid format like: JOHN",
-        });
+        .send({ status: false, message: "book Id id not valid" });
+
+    const existBook = await bookModel.findOne({
+      _id: bookId,
+      isDeleted: false,
+    });
+
+    if (!existBook) {
+      return res.status(404).send({ status: false, message: "Book not found" });
     }
 
-    // if requestBody does not have the "reviewedBy" then assigning its default value
-  } else {
-    reviewData["reviewedBy"] = "Guest";
-  }
-
-  if (isValidRating(rating)) {
-    reviewData["rating"] = rating;
-  } else {
-    return res
-      .status(400)
-      .send({
+    if (!isValidBody(data))
+      return res.status(400).send({
         status: false,
-        message: "rate the book from 1 to 5, in Number format",
+        message: "Data is required to create review",
       });
-  }
 
-  if (requestBody.hasOwnProperty("review")) {
-    if (typeof review === "string" && review.trim().length > 0) {
-      reviewData["review"] = review.trim();
-    } else {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message: `enter review in valid format like : "awesome book must read" `,
-        });
+    if (!req.body.bookId || !isValidId(req.body.bookId)) {
+      return res.status(400).send({
+        status: false,
+        message: "bookId is required in a valid format",
+      });
     }
+
+    if (!reviewedBy) data["reviewedBy"] = "Guest";
+    if (reviewedBy && !isValidName(reviewedBy))
+      return res.status(400).send({
+        status: false,
+        message: "reviewedBy is required in a string format",
+      });
+
+    if (!reviewedAt) data["reviewedAt"] = new Date();
+
+    if (reviewedAt && isValidDate(reviewedAt))
+      return res.status(400).send({
+        status: false,
+        message: "reviewdAt is required in YYYY/MM/DD format",
+      });
+
+    if (!rating || !isValidRating(rating))
+      return res.status(400).send({
+        status: false,
+        message: "Rating is required b/w 1 to 5 and accepted format is number",
+      });
+
+    if (!review || !isValid(review))
+      return res.status(400).send({
+        status: false,
+        message: "Review is required in string format",
+      });
+
+    if (isDeleted && typeof isDeleted !== "boolean")
+      return res.status(400).send({
+        status: false,
+        message: "isDeleted type must be in boolean",
+      });
+
+    const updateBookReview = await bookModel.findOneAndUpdate(
+      { _id: bookId, isDeleted: false },
+      { $inc: { reviews: 1 } },
+      { new: true }
+    );
+
+    data["bookId"] = bookId; //we need bookId in response that is why we have added this
+    const createReviews = await reviewModel.create(data);
+
+    return res
+      .status(201)
+      .send({ status: true, message: "Success", data: createReviews });
+  } catch (err) {
+    return res.status(500).send({ status: false, message: err.message });
   }
-
-  // adding properties like: bookId, default value of isDeleted and review creation date & time inside reviewData
-  reviewData.bookId = bookId;
-  reviewData.isDeleted = false;
-  reviewData.reviewedAt = Date.now();
-
-  const createReview = await reviewModel.create(reviewData);
-
-  const updateReviewCountInBook = await bookModel.findOneAndUpdate(
-    { _id: bookId, isDeleted: false, deletedAt: null },
-    { $inc: { reviews: +1 } },
-    { new: true }
-  );
-
-  const allReviewsOfThisBook = await reviewModel.find({
-    bookId: bookId,
-    isDeleted: false,
-  });
-
-  // USING .lean() to convert mongoose object to plain js object for adding a property temporarily
-  const book = await bookModel.findOne({
-    _id: bookId,
-    isDeleted: false,
-    deletedAt: null,
-  }).lean();
-
-  // temporarily adding one new property inside book which consist all reviews of this book
-  book.reviewsData = allReviewsOfThisBook;
-
-  res
-    .status(201)
-    .send({ status: true, message: "review added successfully", data: book });
-} catch (err) {
-  res.status(500).send({ error: err.message });
-}
 };
 
 //===================update Review===========================================
 const updateReview = async function (req, res) {
   try {
     let bookId = req.params.bookId;
-    if (!mongoose.Types.ObjectId.isValid(bookId))
+    if (!isValidId(bookId))
       return res
         .status(400)
         .send({ status: false, msg: "bookId is not valid" });
 
     let reviewId = req.params.reviewId;
-    if (!mongoose.Types.ObjectId.isValid(reviewId))
+    if (!isValidId(reviewId))
       return res
         .status(400)
         .send({ status: false, msg: "reviewId is not valid" });
 
     let reviewData = req.body;
-    let { review, rating, reviewedBy } = reviewData; //-----check for request body-----
+    let { review, rating, reviewedBy } = reviewData;
 
     if (Object.keys(reviewData).length == 0)
       return res
