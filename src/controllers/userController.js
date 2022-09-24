@@ -133,9 +133,8 @@ const login = async function (req, res) {
         userStatus: "active",
         app: "user of this book management system",
       },
-
-      "bhai tera token generate hogya!!!!",
-      {expiresIn:"2Hr"}
+      "i'm as calm as the sea",
+      { expiresIn: "2Hr" }
     );
     return res.status(200).send({ status: true, data: token });
   } catch (err) {
