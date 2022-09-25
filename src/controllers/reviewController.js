@@ -20,7 +20,7 @@ const createReview = async function (req, res) {
       return res
         .status(400)
         .send({ status: false, message: "book Id id not valid" });
-
+    console.log(bookId);
     const existBook = await bookModel.findOne({
       _id: bookId,
       isDeleted: false,
@@ -35,6 +35,8 @@ const createReview = async function (req, res) {
         status: false,
         message: "Data is required to create review",
       });
+
+    data["bookId"] = bookId;
 
     if (!reviewedBy) data["reviewedBy"] = "Guest";
     if (reviewedBy && !isValid(reviewedBy))
@@ -79,7 +81,7 @@ const createReview = async function (req, res) {
       .lean();
     updateBookReview["reviewsData"] = createReview;
 
-    data["bookId"] = bookId;
+    // data["bookId"] = bookId;
     return res.status(200).send({
       status: true,
       message: "Success",
@@ -110,7 +112,7 @@ const updateReview = async function (req, res) {
         message: "Book not found",
       });
 
-      //set bookId in request body as it is a mandatory field
+    //set bookId in request body as it is a mandatory field
     data["bookId"] = req.params.bookId;
 
     if (!isValidId(reviewId))

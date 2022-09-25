@@ -130,14 +130,14 @@ const login = async function (req, res) {
 
     let token = jwt.sign(
       {
-        loginId: loginUser._id.toString(),
+        userId: loginUser._id.toString(),
         userStatus: "active",
         app: "user of this book management system",
       },
       "i'm as calm as the sea",
       { expiresIn: "2Hr" }
     );
-    return res.status(200).send({ status: true, data: token });
+    return res.status(200).send({ status: true, data: {token:token} });
   } catch (err) {
     return res.status(500).send({ status: false, message: err.message });
   }

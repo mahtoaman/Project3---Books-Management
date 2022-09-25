@@ -16,7 +16,7 @@ const authenticate = async (req, res, next) => {
         let message = err.message === "jwt expired"? "token is expired":"token is invalid";
         return res.status(401).send({ status: false, message: message });
       }
-      req["decodedToken"] = decodedToken;
+      req.headers = decodedToken;
       next();
     });
   } catch (err) {
@@ -41,7 +41,7 @@ const authorise = async (req, res, next) => {
         .send({ status: false, message: "No book available with this bookId" });
 
     let seekingUser = book.userId.toString();
-    let loggedInUser = req.decodedToken.userId;
+    let loggedInUser = req.headers.userId;
 
     if (loggedInUser != seekingUser)
       return res.status(403).send({

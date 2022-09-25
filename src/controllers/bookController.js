@@ -31,8 +31,8 @@ const createBooks = async function (req, res) {
       return res
         .status(400)
         .send({ status: false, message: "Please provide data to create book" });
-
-    if (req.decoded.userId != userId)
+        
+    if (req.headers.userId != userId)
       return res
         .status(403)
         .send({ status: false, msg: "you are not authorised" });
