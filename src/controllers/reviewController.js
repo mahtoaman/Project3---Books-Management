@@ -81,7 +81,7 @@ const createReview = async function (req, res) {
       .lean();
     updateBookReview["reviewsData"] = createReview;
 
-    // data["bookId"] = bookId;
+    data["bookId"] = bookId;
     return res.status(200).send({
       status: true,
       message: "Success",
