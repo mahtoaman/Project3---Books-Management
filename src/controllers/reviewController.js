@@ -117,6 +117,9 @@ const updateReview = async function (req, res) {
         status: false,
         message: "Book not found",
       });
+      
+      //set bookId in request body as it is a mandatory field
+    data["bookId"] = req.params.bookId;
 
     if (!isValidId(reviewId))
       return res
@@ -216,14 +219,14 @@ const deleteReviewById = async function (req, res) {
       { $set: { isDeleted: true, deletedAt: new Date() } }
     );
 
-await bookModel.findOneAndUpdate(
-    {_id:bookId},
-    {$set:{reviews:-1}},
-    {new:true}
-)
+    await bookModel.findOneAndUpdate(
+      { _id: bookId },
+      { $set: { reviews: -1 } },
+      { new: true }
+    );
     return res.status(200).send({
       status: true,
-      message: `Review deleted successfully!`
+      message: `Review deleted successfully!`,
     });
   } catch (err) {
     return res.status(500).send({ status: false, message: err.message });

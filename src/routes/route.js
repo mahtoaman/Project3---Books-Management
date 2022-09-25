@@ -12,9 +12,9 @@ router.get("/test-me", function (req, res) {
 router.post("/register", userController.createUser);
 router.post("/login", userController.login);
 
-router.post("/books",authenticate,authorise, bookController.createBooks);
-router.get("/books/", bookController.getBooks);
-router.get("/books/:bookId", bookController.getBookById);
+router.post("/books",authenticate,bookController.createBooks);
+router.get("/books/",authenticate, bookController.getBooks);
+router.get("/books/:bookId",authenticate, bookController.getBookById);
 router.delete("/books/:bookId",authenticate,authorise, bookController.deleteBookById);
 router.put("/books/:bookId",authenticate,authorise, bookController.updateBookById);
 
