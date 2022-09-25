@@ -117,10 +117,10 @@ const getBooks = async (req, res) => {
     const input = req.query;
     const { userId, category, subcategory } = input;
 
-    if (!isValidBody(input))
-      return res
-        .status(400)
-        .send({ status: false, message: "Please provide atleast one param!" });
+    // if (!isValidBody(input))
+    //   return res
+    //     .status(400)
+    //     .send({ status: false, message: "Please provide atleast one param!" });
 
     if (userId && !isValidId(userId))
       return res

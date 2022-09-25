@@ -47,10 +47,10 @@ const createReview = async function (req, res) {
 
     if (!reviewedAt) data["reviewedAt"] = new Date();
 
-    if (reviewedAt && isValidDate(reviewedAt))
+    if (reviewedAt && !isValidDate(reviewedAt))
       return res.status(400).send({
         status: false,
-        message: "reviewdAt is required in YYYY/MM/DD format",
+        message: "reviewdAt is required in YYYY-MM-DD format",
       });
 
     if (!rating || !isValidRating(rating))
@@ -82,7 +82,7 @@ const createReview = async function (req, res) {
     updateBookReview["reviewsData"] = createReview;
 
     data["bookId"] = bookId;
-    return res.status(200).send({
+    return res.status(201).send({
       status: true,
       message: "Success",
       data: updateBookReview,

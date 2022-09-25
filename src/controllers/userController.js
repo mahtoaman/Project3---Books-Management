@@ -137,7 +137,15 @@ const login = async function (req, res) {
       "i'm as calm as the sea",
       { expiresIn: "2Hr" }
     );
-    return res.status(200).send({ status: true, data: {token:token} });
+    return res.status(200).send({
+      status: true,
+      data: {
+        token: token,
+        userId: loginUser._id,
+        iat: new Date(),
+        expiresIn: "2Hr",
+      },
+    });
   } catch (err) {
     return res.status(500).send({ status: false, message: err.message });
   }

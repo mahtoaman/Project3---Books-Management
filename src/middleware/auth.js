@@ -40,10 +40,10 @@ const authorise = async (req, res, next) => {
         .status(404)
         .send({ status: false, message: "No book available with this bookId" });
 
-    let seekingUser = book.userId.toString();
-    let loggedInUser = req.headers.userId;
+    let newUser = book.userId.toString();
+    let loginUser = req.headers.userId;
 
-    if (loggedInUser != seekingUser)
+    if (newUser != loginUser)
       return res.status(403).send({
         status: false,
         msg: "You are not authorised for this operation",
