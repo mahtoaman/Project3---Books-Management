@@ -139,14 +139,18 @@ const getBooks = async (req, res) => {
 
     input["isDeleted"] = false;
 
-    const bookList = await bookModel.find(input).select({
-      title: 1,
-      excerpt: 1,
-      userId: 1,
-      category: 1,
-      reviews: 1,
-      releasedAt: 1,
-    }).sort('title');
+    const bookList = await bookModel
+      .find(input)
+      .select({
+        title: 1,
+        excerpt: 1,
+        userId: 1,
+        category: 1,
+        reviews: 1,
+        releasedAt: 1,
+      })
+      .sort("title")
+      .collation({ locale: "en" });
 
     if (bookList.length === 0)
       return res.status(404).send({ status: false, message: "No book found!" });
