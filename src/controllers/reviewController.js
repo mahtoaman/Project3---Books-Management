@@ -4,7 +4,6 @@ const {
   isValidId,
   isValidBody,
   isValidRating,
-  isValidName,
   isValidDate,
   isValid,
 } = require("../validators/validator");
@@ -37,15 +36,8 @@ const createReview = async function (req, res) {
         message: "Data is required to create review",
       });
 
-    // if (!req.body.bookId || !isValidId(req.body.bookId)) {
-    //   return res.status(400).send({
-    //     status: false,
-    //     message: "bookId is required in a valid format",
-    //   });
-    // }
-
     if (!reviewedBy) data["reviewedBy"] = "Guest";
-    if (reviewedBy && !isValidName(reviewedBy))
+    if (reviewedBy && !isValid(reviewedBy))
       return res.status(400).send({
         status: false,
         message: "reviewedBy is required in a string format",
@@ -117,7 +109,7 @@ const updateReview = async function (req, res) {
         status: false,
         message: "Book not found",
       });
-      
+
       //set bookId in request body as it is a mandatory field
     data["bookId"] = req.params.bookId;
 
@@ -150,7 +142,7 @@ const updateReview = async function (req, res) {
         message: "Review is required in string format",
       });
 
-    if (reviewedBy && !isValidName(reviewedBy))
+    if (reviewedBy && !isValid(reviewedBy))
       return res.status(400).send({
         status: false,
         message: "reviewedBy is required in a string format",

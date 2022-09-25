@@ -7,6 +7,7 @@ const {
   isValidEmail,
   isValidPassword,
   isValidPin,
+  isValid,
 } = require("../validators/validator");
 
 const createUser = async function (req, res) {
@@ -23,10 +24,10 @@ const createUser = async function (req, res) {
     if (!title || (title != "Mr" && title != "Mrs" && title != "Miss"))
       return res.status(400).send({
         status: false,
-        message: `Title is required in given format, format: "Mr","Mrs" or "Miss`,
+        message: `Title is required in given format, format: "Mr","Mrs" or "Miss`
       });
 
-    if (!name || !isValidName(name))
+    if (!name || !isValid(name) || !isValidName(name))
       return res.status(400).send({
         status: false,
         message: "Name is required in a valid format",
@@ -77,7 +78,7 @@ const createUser = async function (req, res) {
           message: "Please enter a valid street",
         });
 
-      if (!city || !isValidName(city))
+      if (!city || !isValid(city) || !isValidName(city))
         return res
           .status(400)
           .send({ status: false, message: "Please enter a valid city name" });
