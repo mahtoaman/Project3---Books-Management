@@ -32,6 +32,11 @@ const createBooks = async function (req, res) {
         .status(400)
         .send({ status: false, message: "Please provide data to create book" });
 
+    if (req.decoded.userId != userId)
+      return res
+        .status(403)
+        .send({ status: false, msg: "you are not authorised" });
+
     if (!title || !isValid(title))
       return res
         .status(400)
@@ -50,10 +55,7 @@ const createBooks = async function (req, res) {
           "Please Provide Excerpt in a valid format it contains only alphabets",
       });
 
-    if (!userId || !isValidId(userId))
-      return res
-        .status(400)
-        .send({ status: false, message: "Please Provide a valid userId" });
+   
 
     let isUserPresent = await userModel.findById(userId);
     if (!isUserPresent)

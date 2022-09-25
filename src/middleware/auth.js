@@ -24,7 +24,9 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-//================================AUTHORIZATIONS====================
+
+//================================AUTHORIZATIONS==================================
+
 const authorise = async (req, res, next) => {
   try {
     let bookId = req.params.bookId;
