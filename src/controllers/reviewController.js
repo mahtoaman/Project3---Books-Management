@@ -37,12 +37,12 @@ const createReview = async function (req, res) {
         message: "Data is required to create review",
       });
 
-    if (!req.body.bookId || !isValidId(req.body.bookId)) {
-      return res.status(400).send({
-        status: false,
-        message: "bookId is required in a valid format",
-      });
-    }
+    // if (!req.body.bookId || !isValidId(req.body.bookId)) {
+    //   return res.status(400).send({
+    //     status: false,
+    //     message: "bookId is required in a valid format",
+    //   });
+    // }
 
     if (!reviewedBy) data["reviewedBy"] = "Guest";
     if (reviewedBy && !isValidName(reviewedBy))

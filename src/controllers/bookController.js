@@ -113,7 +113,7 @@ const createBooks = async function (req, res) {
 const getBooks = async (req, res) => {
   try {
     const input = req.query;
-    const { userId, category, subcategory } = input; // Destructuring
+    const { userId, category, subcategory } = input;
 
     if (!isValidBody(input))
       return res
@@ -124,13 +124,11 @@ const getBooks = async (req, res) => {
       return res
         .status(400)
         .send({ status: false, message: "userId is invalid!" });
-    // filter.userId = userId;
 
     if (category && !isValid(category))
       return res
         .status(400)
         .send({ status: false, message: "Category is invalid!" });
-    // filter.category = category;
 
     if (subcategory && !isValid(subcategory))
       return res
@@ -146,15 +144,14 @@ const getBooks = async (req, res) => {
       category: 1,
       reviews: 1,
       releasedAt: 1,
-    });
+    }).sort('title');
 
     if (bookList.length === 0)
-      return res.status(404).send({ status: false, message: "No book found!" }); // DB Validation
+      return res.status(404).send({ status: false, message: "No book found!" });
 
-    const sortedBooks = bookList.sort({ title: 1 });
     return res
       .status(200)
-      .send({ status: true, message: "Books list", data: sortedBooks });
+      .send({ status: true, message: "Books list", data: bookList });
   } catch (error) {
     return res.status(500).send({ status: false, message: error.message });
   }
