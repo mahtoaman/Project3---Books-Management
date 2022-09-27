@@ -176,6 +176,7 @@ const getBookById = async function (req, res) {
     let getBook = await bookModel
       .findOne({ _id: bookId, isDeleted: false })
       .lean();
+
     if (!getBook)
       return res
         .status(404)
@@ -189,6 +190,7 @@ const getBookById = async function (req, res) {
       .select({ isDeleted: 0, createdAt: 0, updatedAt: 0, _id: 0, __v:0 });
 
     getBook["reviewsData"] = getReviews;
+    
     return res
       .status(200)
       .send({ status: true, message: "Book List", data: getBook });
@@ -205,7 +207,7 @@ const deleteBookById = async function (req, res) {
     if (!isValidId(bookId))
       return res.status(400).send({ status: false, message: "Invalid bookId" });
 
-    let bookDetails = await bookModel.findById({
+    let bookDetails = await bookModel.findOne({
       _id: bookId,
       isDeleted: false,
     });

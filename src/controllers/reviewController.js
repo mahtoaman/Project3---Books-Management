@@ -20,7 +20,6 @@ const createReview = async function (req, res) {
       return res
         .status(400)
         .send({ status: false, message: "book Id id not valid" });
-    console.log(bookId);
     const existBook = await bookModel.findOne({
       _id: bookId,
       isDeleted: false,
@@ -215,7 +214,7 @@ const deleteReviewById = async function (req, res) {
 
     await bookModel.findOneAndUpdate(
       { _id: bookId },
-      { $set: { reviews: -1 } },
+      { $inc: { reviews:-1 } },
       { new: true }
     );
     return res.status(200).send({
